@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ECECEF">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Đăng bài">
+<title>Đăng bài</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<svg width="0" height="0" class="hidden" aria-hidden="true">
+  <symbol id="i-home" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24"><path d="M11 3.5l1.9 5.1 5.1 1.9-5.1 1.9L11 17.5l-1.9-5.1L4 10.5l5.1-1.9z"/><path d="M18.5 15l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="4" y="5.5" width="16" height="14" rx="3"/><path d="M4 10h16M8.5 3.5v3M15.5 3.5v3"/></symbol>
+  <symbol id="i-run" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+  <symbol id="i-dots" viewBox="0 0 24 24"><circle cx="6" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="18" cy="12" r="1.2"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-cam" viewBox="0 0 24 24"><path d="M4 8.5a2 2 0 0 1 2-2h2l1.5-2h5L16 6.5h2a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><circle cx="12" cy="12.5" r="3.5"/></symbol>
+  <symbol id="i-img" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="3"/><circle cx="9" cy="10" r="1.6"/><path d="M20.5 16l-4.5-4.5L7 19"/></symbol>
+  <symbol id="i-film" viewBox="0 0 24 24"><rect x="3" y="6" width="12.5" height="12" rx="3"/><path d="M15.5 10.5l5-3v9l-5-3"/></symbol>
+  <symbol id="i-flame" viewBox="0 0 24 24"><path d="M12 3.5c.8 3 4.8 4.9 4.8 9.5a4.8 4.8 0 0 1-9.6 0c0-2 .9-3.4 2-4.4.2 1.5.9 2.4 1.9 2.8-.3-2.6-.1-5.3.9-7.9z"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.2"/><path d="M20 20l-4.6-4.6"/></symbol>
+  <symbol id="i-mega" viewBox="0 0 24 24"><path d="M4 10.5v3a1 1 0 0 0 1 1h2.5L13 18V6L7.5 9.5H5a1 1 0 0 0-1 1z"/><path d="M16.5 9.5a3.5 3.5 0 0 1 0 5"/><path d="M18.8 7.2a6.5 6.5 0 0 1 0 9.6"/></symbol>
+  <symbol id="i-pc" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="11.5" rx="2.5"/><path d="M9 20h6M12 16v4"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M20 4L10.5 13.5"/><path d="M20 4l-6 16-3.5-6.5L4 10z"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M7 7l10 10M17 7L7 17"/></symbol>
+  <symbol id="i-qr" viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1.2"/><rect x="14" y="4" width="6" height="6" rx="1.2"/><rect x="4" y="14" width="6" height="6" rx="1.2"/><path d="M14 14h2v2h-2zM18 14h2M14 18h2M18 18h2v2"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+</svg>
+
+<!-- ================= MÀN GHÉP MÁY ================= -->
+<section class="pair hidden" id="pair">
+  <div class="logo"><svg class="ic lg"><use href="#i-spark"/></svg></div>
+  <h1>Ghép với máy tính</h1>
+  <p>Điện thoại sẽ điều khiển app Đăng bài trên máy tính của quán. Mọi việc vẫn chạy trên máy tính, bằng gói Claude của bạn.</p>
+  <ol>
+    <li>Trên máy tính: mở app Đăng bài → <b>Máy</b> → <b>Ghép điện thoại</b>.</li>
+    <li>Quét mã QR hiện ra (bằng nút dưới đây hoặc camera điện thoại).</li>
+  </ol>
+  <button class="btn acc block" id="pair-scan"><svg class="ic"><use href="#i-qr"/></svg>Quét mã QR</button>
+  <div class="scan hidden" id="pair-cam"><video id="pair-video" playsinline muted></video></div>
+  <div class="label">Hoặc nhập mã 8 ký tự trên máy tính</div>
+  <input class="codein" id="pair-code" maxlength="9" autocomplete="off" autocapitalize="characters" placeholder="ABCD 2345">
+  <button class="btn ghost block" id="pair-go">Ghép</button>
+  <div class="err" id="pair-err"></div>
+  <div class="okmsg" id="pair-msg"></div>
+</section>
+
+<div class="app" id="app">
+  <div class="top">
+    <div><h1 id="title">Đăng bài</h1><small id="sub"></small></div>
+    <button class="pc off" id="pc"><span class="dot"></span><span id="pc-t">Đang kết nối…</span></button>
+  </div>
+  <div class="offbar hidden" id="offbar"><svg class="ic sm"><use href="#i-pc"/></svg><span>Máy tính đang tắt hoặc mất mạng. Lệnh bạn gửi được giữ lại, máy bật lên là làm tiếp.</span></div>
+
+  <div class="scroll" id="scroll">
+    <!-- ===== TỔNG QUAN ===== -->
+    <section class="page on" id="p-home">
+      <div class="card acc">
+        <div class="row between"><span class="label">Hôm nay</span><span class="note" id="h-upd"></span></div>
+        <div class="stats"><div><b id="st-posts">–</b><span>bài đã đăng</span></div><div><b id="st-done">–</b><span>việc xong</span></div><div><b class="hot" id="st-run">–</b><span>đang chạy</span></div></div>
+        <button class="pend hidden" id="st-pend" data-go="lich"></button>
+      </div>
+      <div class="card">
+        <span class="ttl">Làm nhanh</span>
+        <div class="qa">
+          <button data-pick="cam"><i><svg class="ic"><use href="#i-cam"/></svg></i>Chụp đăng</button>
+          <button data-pick="lib"><i><svg class="ic"><use href="#i-img"/></svg></i>Thư viện</button>
+          <button data-sheet="1"><i><svg class="ic"><use href="#i-spark"/></svg></i>Nhờ app</button>
+          <button data-go="run"><i><svg class="ic"><use href="#i-run"/></svg></i>Đang chạy</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="row between"><span class="ttl">Sắp đăng</span><button class="btn sm ghost" data-go="lich">Xem lịch <svg class="ic sm"><use href="#i-arrow"/></svg></button></div>
+        <div id="h-next"><div class="note">Đang tải…</div></div>
+      </div>
+      <div class="pull">Kéo xuống để làm mới</div>
+    </section>
+
+    <!-- ===== TẠO BÀI ===== -->
+    <section class="page" id="p-tao">
+      <div id="t-form" class="card">
+        <div class="row between"><span class="ttl">1 · Ảnh, clip</span><span class="note" id="t-hint">tối đa 10</span></div>
+        <div class="photos" id="t-photos"></div>
+        <span class="ttl">2 · Muốn đăng gì?</span>
+        <textarea rows="2" id="t-note" placeholder="VD: món mới bánh mì nướng muối ớt, 25k"></textarea>
+        <span class="ttl">3 · Đăng lên đâu</span>
+        <div class="ticks"><button class="tk on" data-pf="facebook"><i><svg class="ic sm"><use href="#i-check"/></svg></i>Facebook + IG</button><button class="tk on" data-pf="threads"><i><svg class="ic sm"><use href="#i-check"/></svg></i>Threads</button></div>
+        <button class="btn acc block" id="t-make"><svg class="ic"><use href="#i-spark"/></svg><span>Làm cho tôi</span></button>
+        <span class="note" style="text-align:center">Máy tính viết caption bằng gói Claude của bạn</span>
+      </div>
+      <div id="t-wait" class="card hidden"><span class="ttl" id="t-wait-title">Máy tính đang làm</span><div class="steps-live" id="t-live"></div></div>
+      <div id="t-prev" class="card hidden">
+        <div class="row between"><span class="ttl">Xem trước</span><div class="seg" id="t-tabs"><button class="on" data-p="facebook">FB + IG</button><button data-p="threads">Threads</button></div></div>
+        <div class="post">
+          <div class="who"><div class="av"></div><div><b id="t-shop">Trang của bạn</b><small id="t-when">Đăng ngay</small></div></div>
+          <textarea class="capt" id="cap-facebook"></textarea>
+          <textarea class="capt hidden" id="cap-threads"></textarea>
+          <div class="count" id="t-count"></div>
+          <div class="imgs" id="t-imgs"></div>
+        </div>
+        <div class="when-row"><span class="label">Giờ đăng</span><input type="datetime-local" id="t-at"><button class="btn sm ghost" id="t-now">Đăng ngay</button></div>
+        <button class="btn blue block" id="t-fill"><svg class="ic"><use href="#i-send"/></svg>Cho máy tính điền vào Facebook</button>
+        <button class="btn ghost block" id="t-redo">Viết lại caption</button>
+      </div>
+      <div id="t-check" class="card hidden">
+        <span class="ttl" id="t-check-title">Máy tính đã điền xong</span>
+        <img class="shotimg hidden" id="t-shot" alt="Ảnh chụp Business Suite">
+        <div class="steplist" id="t-steps"></div>
+        <div class="note" id="t-check-note">Kiểm tra ảnh chụp. Ổn thì bấm Đăng, máy tính sẽ tự bấm nút trong Business Suite.</div>
+        <button class="btn acc block" id="t-publish"><svg class="ic"><use href="#i-check"/></svg>Đăng / lên lịch</button>
+        <button class="btn ghost block" id="t-new">Bài mới</button>
+      </div>
+      <input type="file" id="f-cam" accept="image/*" capture="environment" class="hidden">
+      <input type="file" id="f-lib" accept="image/*,video/*" multiple class="hidden">
+    </section>
+
+    <!-- ===== LỊCH ===== -->
+    <section class="page" id="p-lich">
+      <div class="days" id="days"></div>
+      <div id="day-list" style="display:flex;flex-direction:column;gap:10px"></div>
+    </section>
+
+    <!-- ===== ĐANG CHẠY ===== -->
+    <section class="page" id="p-run">
+      <div id="run-active" style="display:flex;flex-direction:column;gap:10px"></div>
+      <div class="sec">Xong gần đây</div>
+      <div id="run-recent" style="display:flex;flex-direction:column;gap:10px"></div>
+    </section>
+
+    <!-- ===== THÊM ===== -->
+    <section class="page" id="p-more">
+      <div class="card">
+        <div class="device"><div class="pcico"><svg class="ic"><use href="#i-pc"/></svg></div>
+          <div style="flex:1"><b id="m-pc">Máy tính của quán</b><div class="note" id="m-pc-sub"></div></div>
+          <span class="badge ok" id="m-pc-badge">…</span></div>
+        <button class="btn ghost block" id="m-unpair">Gỡ ghép điện thoại này</button>
+      </div>
+      <div class="more-grid">
+        <button class="mg soon" data-soon="Edit video"><i><svg class="ic"><use href="#i-film"/></svg></i><b>Edit video</b><small>Gửi clip, duyệt kịch bản</small><span class="tag">Sắp có</span></button>
+        <button class="mg soon" data-soon="Học từ video hot"><i><svg class="ic"><use href="#i-flame"/></svg></i><b>Học hot</b><small>Phân tích video viral</small><span class="tag">Sắp có</span></button>
+        <button class="mg soon" data-soon="Khám kênh"><i><svg class="ic"><use href="#i-search"/></svg></i><b>Khám kênh</b><small>Chấm điểm fanpage</small><span class="tag">Sắp có</span></button>
+        <button class="mg soon" data-soon="Quảng cáo"><i><svg class="ic"><use href="#i-mega"/></svg></i><b>Quảng cáo</b><small>Kế hoạch chạy QC</small><span class="tag">Sắp có</span></button>
+      </div>
+      <div class="note" style="text-align:center">Kiểm tra máy và quản lý key chỉ làm trên máy tính.<br><span id="m-ver"></span></div>
+    </section>
+  </div>
+
+  <nav class="tabbar" id="tabbar">
+    <span class="tab-ind" id="ind"></span>
+    <button class="tab on" data-p="home"><svg class="ic"><use href="#i-home"/></svg>Tổng quan</button>
+    <button class="tab" data-p="tao"><svg class="ic"><use href="#i-spark"/></svg>Tạo bài</button>
+    <button class="plus" id="plus" title="Chụp ảnh / nhờ app làm"><svg class="ic lg"><use href="#i-plus"/></svg></button>
+    <button class="tab" data-p="lich"><svg class="ic"><use href="#i-cal"/></svg>Lịch<span class="n hidden" id="n-lich"></span></button>
+    <button class="tab" data-p="run"><svg class="ic"><use href="#i-run"/></svg>Đang chạy<span class="n hidden" id="n-run"></span></button>
+  </nav>
+
+  <div class="scrim" id="scrim"></div>
+  <div class="sheet" id="sheet">
+    <div class="grab"></div>
+    <button class="opt main" data-act="cam"><i><svg class="ic"><use href="#i-cam"/></svg></i><span><b>Chụp ảnh đăng bài</b><small>Mở camera, chụp xong là soạn bài luôn</small></span></button>
+    <button class="opt" data-act="lib"><i><svg class="ic"><use href="#i-img"/></svg></i><span><b>Chọn từ thư viện</b><small>Ảnh, clip có sẵn trong máy</small></span></button>
+    <button class="opt" data-act="more"><i><svg class="ic"><use href="#i-dots"/></svg></i><span><b>Thêm</b><small>Máy tính đã ghép, tính năng khác</small></span></button>
+    <div class="label" style="margin:8px 4px 0">Hoặc nhờ app làm</div>
+    <form class="cmd" id="cmd"><input id="cmd-in" placeholder="VD: phân tích video tiktok.com/…, khám kênh facebook.com/…"><button class="btn sm acc" type="submit"><svg class="ic sm"><use href="#i-send"/></svg></button></form>
+    <div id="cmd-out"></div>
+  </div>
+  <div class="toast" id="toast"></div>
+  <div class="ask" id="ask"><div class="ask-box">
+    <div class="ask-ic"><svg class="ic lg"><use href="#i-check"/></svg></div>
+    <b id="ask-msg"></b><span class="note" id="ask-sub"></span>
+    <div class="row"><button class="btn ghost block" id="ask-no">Hủy</button><button class="btn acc block" id="ask-ok">Đồng ý</button></div>
+  </div></div>
+</div>
+
+<script src="e2e.js"></script>
+<script src="remote-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js" defer></script>
+<script type="module" src="app.js"></script>
+</body>
+</html>
