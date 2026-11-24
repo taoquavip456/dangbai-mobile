@@ -230,3 +230,54 @@ textarea:focus { background: #fff; border-color: var(--blue); box-shadow: 0 0 0 
 .muted { color: var(--muted); }
 .big-empty { text-align: center; color: var(--muted); padding: 30px 10px; }
 .pull { text-align: center; font-size: 12px; color: var(--muted); padding: 6px 0 0; }
+/* ============ BẢN 1.1: KHÓA KHUNG + CHẤT RIÊNG ============ */
+/* Khóa cả trang: chỉ vùng nội dung được cuộn (iPhone không kéo trôi cả app nữa) */
+html, body { position: fixed; inset: 0; width: 100%; height: 100%; overflow: hidden; overscroll-behavior: none; touch-action: manipulation; }
+.app { overflow: hidden; max-width: 100vw; }
+.scroll { overscroll-behavior-y: contain; overflow-x: hidden; padding-left: 16px !important; padding-right: 16px !important; }
+.pull-wrap { will-change: transform; }
+.pull-wrap.back { transition: transform .5s cubic-bezier(.2,.9,.25,1.15); }
+
+/* Kéo để làm mới: ngôi sao logo */
+.ptr { position: absolute; left: 0; right: 0; top: calc(env(safe-area-inset-top, 0px) + 74px); display: flex; justify-content: center; pointer-events: none; z-index: 5; opacity: 0; }
+.ptr-badge { width: 44px; height: 44px; border-radius: 15px; background: var(--acc); box-shadow: var(--acc-shadow); display: grid; place-items: center; }
+.ptr-badge svg { width: 28px; height: 28px; overflow: visible; }
+#ptr-small { opacity: 0; transform: scale(0); transform-origin: 18.5px 18.3px; transition: opacity .2s, transform .35s cubic-bezier(.3,1.8,.5,1); }
+.ptr.ready #ptr-small { opacity: 1; transform: scale(1.25); }
+.ptr.loading #ptr-big { animation: ptrspin 1.1s linear infinite; transform-origin: 11px 10.5px; }
+.ptr.loading #ptr-orb { animation: ptrspin .9s linear infinite; transform-origin: 12px 12px; }
+@keyframes ptrspin { to { transform: rotate(360deg); } }
+.ptr-pill { position: absolute; left: 50%; top: calc(env(safe-area-inset-top, 0px) + 70px); transform: translate(-50%, -16px); opacity: 0; background: var(--acc); color: #fff; font-size: 12.5px; font-weight: 600; padding: 7px 14px; border-radius: 999px; z-index: 6; pointer-events: none; white-space: nowrap; transition: transform .4s cubic-bezier(.3,1.5,.5,1), opacity .25s; box-shadow: var(--acc-shadow); }
+.ptr-pill::before { content: "✓ "; color: var(--blue-hi); }
+.ptr-pill.on { opacity: 1; transform: translate(-50%, 0); }
+
+/* Tiêu đề lớn thu nhỏ khi cuộn, hiện sao logo */
+.top { transition: padding .25s ease, background .25s ease, box-shadow .25s ease; position: relative; z-index: 4; }
+.top h1 { transition: font-size .25s ease, letter-spacing .25s ease; }
+.top small { transition: opacity .2s, max-height .25s; max-height: 20px; overflow: hidden; }
+.top-t { display: flex; align-items: center; gap: 0; min-width: 0; }
+.top-logo { width: 0; height: 28px; border-radius: 9px; background: var(--acc); color: #fff; display: grid; place-items: center; overflow: hidden; transition: width .25s ease, margin .25s ease; flex: none; }
+.top.compact { padding-bottom: 8px !important; background: rgba(236,236,239,.82); -webkit-backdrop-filter: saturate(1.6) blur(14px); backdrop-filter: saturate(1.6) blur(14px); box-shadow: 0 1px 0 var(--line); }
+.top.compact h1 { font-size: 17px !important; letter-spacing: -.3px; }
+.top.compact small { opacity: 0; max-height: 0; }
+.top.compact .top-logo { width: 28px; margin-right: 10px; }
+
+/* Chạm: lún nhẹ + viền sáng xanh loé lên */
+.card, .li, .qa button, .job, .ev, .mg, .dy, .tk, .opt, .btn, .pc, .tab { transition: transform .18s cubic-bezier(.3,1.4,.5,1), box-shadow .25s ease; }
+.li:active, .qa button:active, .job:active, .ev:active, .mg:active, .dy:active, .opt:active, .card.tap:active { transform: scale(.97); box-shadow: 0 0 0 2px rgba(31,162,214,.45), var(--shadow); }
+.tab:active svg { transform: scale(.85); }
+.tab svg { transition: transform .2s cubic-bezier(.3,1.6,.5,1); }
+
+/* Màn trống: ngôi sao nét mảnh */
+.big-empty::before, .empty::before { content: ""; display: block; width: 54px; height: 54px; margin: 0 auto 12px; opacity: .55;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2397CADB' stroke-width='1.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M11 3.5l1.9 5.1 5.1 1.9-5.1 1.9L11 17.5l-1.9-5.1L4 10.5l5.1-1.9z'/%3E%3Cpath d='M18.5 15l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z'/%3E%3C/svg%3E") center/contain no-repeat; }
+
+/* Sao xanh bay lên máy tính khi gửi lệnh */
+.fly { position: fixed; width: 18px; height: 18px; z-index: 80; pointer-events: none; color: var(--blue-hi); filter: drop-shadow(0 0 6px rgba(31,162,214,.9)); }
+.fly svg { width: 100%; height: 100%; fill: currentColor; }
+.pc.got { box-shadow: 0 0 0 3px rgba(31,162,214,.45), var(--shadow); }
+
+/* Thông báo dời lên trên, không che nút + */
+.toast { bottom: auto !important; top: calc(env(safe-area-inset-top, 0px) + 66px); transform: translateX(-50%) translateY(-10px) !important; max-width: calc(100vw - 32px); white-space: normal !important; text-align: center; }
+.toast.on { transform: translateX(-50%) !important; }
+.li .mini.cal, .ev .mini.cal { background: var(--blue-pale); color: var(--navy); display: grid; place-items: center; }
