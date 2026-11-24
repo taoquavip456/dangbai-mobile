@@ -5,7 +5,7 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2/+esm';
 
 const E = window.DBE2E, CFG = window.DBRemoteConfig;
-const APP_VERSION = '1.0.0';
+const APP_VERSION = '1.1.0';
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const EASE = 'cubic-bezier(.2,.9,.25,1)';
 const LIMITS = { facebook: 2200, threads: 500 };
@@ -47,7 +47,7 @@ function go(p) {
   $$('.tab').forEach(t => t.classList.toggle('on', t.dataset.p === p));
   $$('.page').forEach(s => s.classList.toggle('on', s.id === 'p-' + p));
   $('#title').textContent = p === 'home' ? greet() : TITLES[p];
-  $('#sub').textContent = p === 'home' ? (snap?.shop || '') : '';
+  $('#sub').textContent = p === 'home' ? (snap ? shopLabel() : '') : '';
   $('#scroll').scrollTop = 0;
   moveInd();
   [...$('#p-' + p).children].filter(n => n.offsetParent).forEach((n, i) => n.animate(
@@ -194,6 +194,7 @@ async function send(type, payload, onStep) {
   const prom = new Promise((resolve, reject) => pending.set(id, { resolve, reject, onStep }));
   const { error } = await sb.from('commands').insert({ id, owner_id: P.ownerId, from_device: P.deviceId, type, v: CFG.protocol, payload: box });
   if (error) { pending.delete(id); throw new Error('Không gửi được lệnh: ' + error.message); }
+  if (type !== 'snapshot.get') flyStar();   // lệnh người dùng bấm: sao xanh bay lên máy tính
   pollCommand(id);
   return prom;
 }
@@ -240,6 +241,7 @@ async function startMain() {
     })
     .subscribe();
   await refreshPc();
+  bumpHint(false);
   await refresh();
 }
 async function refreshPc() {
@@ -257,22 +259,94 @@ function drawPc() {
 }
 async function refresh() {
   try {
-    const t0 = Date.now();
     snap = await send('snapshot.get', {});
-    $('#h-upd').textContent = `cập nhật ${hm(Date.now())} · ${Date.now() - t0} ms`;
+    $('#h-upd').textContent = `cập nhật ${hm(Date.now())}`;
     render();
   } catch (e) { $('#h-upd').textContent = e.message.slice(0, 60); }
 }
 setInterval(() => { if (P && ownerKey && document.visibilityState === 'visible') { refreshPc(); } }, 30000);
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && P && ownerKey) { refreshPc(); refresh(); } });
-// Kéo xuống ở đầu trang để làm mới.
-let pullY = null;
-$('#scroll').addEventListener('touchstart', e => { pullY = $('#scroll').scrollTop <= 0 ? e.touches[0].clientY : null; }, { passive: true });
-$('#scroll').addEventListener('touchend', e => { if (pullY !== null && e.changedTouches[0].clientY - pullY > 90 && P && ownerKey) { toast('Đang làm mới…', 1200); refreshPc(); refresh(); } pullY = null; });
+// ---------- Kéo xuống để làm mới: ngôi sao logo tự vẽ nét ----------
+// Kéo: sao trắng vẽ dần + xoay vào tư thế. Đủ ngưỡng: sao xanh bật ra. Thả: sao quay trong lúc tải,
+// xong thì nội dung nảy về + nhãn "Đã cập nhật hh:mm" trượt xuống.
+const PTR_MAX = 130, PTR_READY = 78, PTR_HOLD = 64;
+let ptrY0 = null, ptrD = 0, ptrBusy = false;
+const scrollEl = $('#scroll'), wrap = $('#pull-wrap'), ptr = $('#ptr'), ptrBadge = $('#ptr-badge'), ptrBig = $('#ptr-big');
+function ptrDraw(d) {
+  const p = Math.min(1, d / PTR_READY);
+  wrap.style.transform = d ? `translateY(${d}px)` : '';
+  ptr.style.opacity = Math.min(1, d / 30);
+  ptr.style.transform = `translateY(${Math.min(d, PTR_HOLD) - 54}px)`;
+  ptrBig.setAttribute('stroke-dashoffset', String(100 - p * 100));
+  ptrBadge.style.transform = `scale(${0.6 + 0.4 * p}) rotate(${Math.round(p * 180 - 180)}deg)`;
+  ptr.classList.toggle('ready', d >= PTR_READY);
+}
+scrollEl.addEventListener('touchstart', e => {
+  if (ptrBusy || !P || !ownerKey || scrollEl.scrollTop > 0) { ptrY0 = null; return; }
+  ptrY0 = e.touches[0].clientY; ptrD = 0; wrap.classList.remove('back');
+}, { passive: true });
+scrollEl.addEventListener('touchmove', e => {
+  if (ptrY0 === null) return;
+  const dy = e.touches[0].clientY - ptrY0;
+  if (dy <= 0 || scrollEl.scrollTop > 0) { if (ptrD) { ptrD = 0; ptrDraw(0); } return; }
+  e.preventDefault();                                   // giữ khung đứng yên, chỉ nội dung giãn
+  ptrD = Math.min(PTR_MAX, dy * 0.55 - (dy * dy) / 4000); // càng kéo càng nặng tay
+  ptrDraw(Math.max(0, ptrD));
+}, { passive: false });
+scrollEl.addEventListener('touchend', async () => {
+  if (ptrY0 === null) return;
+  ptrY0 = null;
+  wrap.classList.add('back');
+  if (ptrD < PTR_READY) { ptrD = 0; ptrDraw(0); return; }
+  ptrBusy = true;
+  wrap.style.transform = `translateY(${PTR_HOLD}px)`;
+  ptr.style.transform = `translateY(${PTR_HOLD - 54}px)`; ptrBadge.style.transform = 'scale(1)';
+  ptr.classList.add('loading');
+  await Promise.all([refreshPc(), refresh(), new Promise(r => setTimeout(r, 700))]);
+  ptr.classList.remove('loading', 'ready');
+  ptrD = 0; ptrDraw(0);
+  const pill = $('#ptr-pill'); pill.textContent = `Đã cập nhật ${hm(Date.now())}`; pill.classList.add('on');
+  setTimeout(() => pill.classList.remove('on'), 1600);
+  ptrBusy = false;
+  bumpHint();
+});
+// Gợi ý "Kéo xuống để làm mới": chỉ hiện 3 lần đầu mở app, đã kéo thử rồi thì thôi.
+function bumpHint(seen = true) {
+  let n = 0; try { n = +localStorage.getItem('dangbai.pullHint') || 0; } catch { /* bỏ qua */ }
+  if (seen) n = 99; else n++;
+  try { localStorage.setItem('dangbai.pullHint', String(n)); } catch { /* bỏ qua */ }
+  $('#pull-hint').classList.toggle('hidden', n > 3);
+}
 
+// ---------- Tiêu đề lớn thu nhỏ khi cuộn ----------
+scrollEl.addEventListener('scroll', () => { $('#top').classList.toggle('compact', scrollEl.scrollTop > 36); }, { passive: true });
+
+// ---------- Sao xanh bay lên chấm "Máy tính" khi gửi lệnh ----------
+let lastTap = { x: innerWidth / 2, y: innerHeight - 80 };
+addEventListener('pointerdown', e => { lastTap = { x: e.clientX, y: e.clientY }; }, { passive: true });
+function flyStar() {
+  const to = $('#pc').getBoundingClientRect();
+  const s = document.createElement('div');
+  s.className = 'fly';
+  s.innerHTML = '<svg viewBox="0 0 24 24"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4z"/></svg>';
+  s.style.left = (lastTap.x - 9) + 'px'; s.style.top = (lastTap.y - 9) + 'px';
+  document.body.appendChild(s);
+  const dx = to.left + 14 - lastTap.x, dy = to.top + to.height / 2 - lastTap.y;
+  s.animate([
+    { transform: 'translate(0,0) scale(.6) rotate(0)', opacity: 0 },
+    { transform: `translate(${dx * 0.45}px, ${dy * 0.55 - 40}px) scale(1.2) rotate(140deg)`, opacity: 1, offset: 0.45 },
+    { transform: `translate(${dx}px, ${dy}px) scale(.4) rotate(300deg)`, opacity: 0.2 }
+  ], { duration: 650, easing: 'cubic-bezier(.4,0,.2,1)' }).finished.then(() => {
+    s.remove();
+    $('#pc').classList.add('got'); setTimeout(() => $('#pc').classList.remove('got'), 400);
+  }).catch(() => s.remove());
+}
+
+// Tên quán chưa đặt → nhắc đặt ở Hồ sơ trên máy tính.
+const shopLabel = () => (!snap?.shop || /chưa đặt tên/i.test(snap.shop)) ? 'Đặt tên quán ở Hồ sơ trên máy tính' : snap.shop;
 function render() {
   if (!snap) return;
-  if (page === 'home') { $('#title').textContent = greet(); $('#sub').textContent = snap.shop || ''; }
+  if (page === 'home') { $('#title').textContent = greet(); $('#sub').textContent = shopLabel(); }
   const now = Date.now();
   const posts = snap.posts || [];
   $('#st-posts').textContent = posts.filter(p => p.posted && sameDay(p.scheduleAt || p.at, now)).length;
@@ -282,7 +356,7 @@ function render() {
   $('#st-pend').classList.toggle('hidden', !pend);
   $('#st-pend').textContent = `+${pend} bài chưa xác nhận đăng`;
   const next = posts.filter(p => p.scheduleAt && Date.parse(p.scheduleAt) > now).sort((a, b) => Date.parse(a.scheduleAt) - Date.parse(b.scheduleAt)).slice(0, 3);
-  $('#h-next').innerHTML = next.length ? next.map(p => `<div class="li"><div class="mini g1"></div><div class="t"><b>${esc(p.title)}</b><small>${p.facebook ? 'FB + IG' : ''}${p.facebook && p.threads ? ', ' : ''}${p.threads ? 'Threads' : ''} · ${p.posted ? 'đã lên lịch' : 'mới điền sẵn'}</small></div><span class="time${p.posted ? '' : ' warn'}">${sameDay(p.scheduleAt, now) ? hm(p.scheduleAt) : new Date(p.scheduleAt).toLocaleDateString('vi-VN', { weekday: 'short', day: '2-digit', month: '2-digit' })}</span></div>`).join('')
+  $('#h-next').innerHTML = next.length ? next.map(p => `<div class="li" data-go="lich"><div class="mini cal"><svg class="ic"><use href="#i-cal"/></svg></div><div class="t"><b>${esc(p.title)}</b><small>${p.facebook ? 'FB + IG' : ''}${p.facebook && p.threads ? ', ' : ''}${p.threads ? 'Threads' : ''} · ${p.posted ? 'đã lên lịch' : 'mới điền sẵn'}</small></div><span class="time${p.posted ? '' : ' warn'}">${sameDay(p.scheduleAt, now) ? hm(p.scheduleAt) : new Date(p.scheduleAt).toLocaleDateString('vi-VN', { weekday: 'short', day: '2-digit', month: '2-digit' })}</span></div>`).join('')
     : '<div class="note">Chưa có bài hẹn giờ. Bấm nút + để chụp ảnh đăng bài.</div>';
   const nRun = (snap.queue?.active || []).length;
   $('#n-run').textContent = nRun; $('#n-run').classList.toggle('hidden', !nRun);
@@ -327,7 +401,7 @@ function drawLich(dir = 0) {
   }).join('');
   const d = days[selDay], list = posts.filter(p => sameDay(p.scheduleAt || p.at, d)).sort((a, b) => Date.parse(a.scheduleAt || a.at) - Date.parse(b.scheduleAt || b.at));
   const box = $('#day-list');
-  box.innerHTML = list.length ? list.map(p => `<div class="ev${p.posted ? '' : ' pending'}" data-post="${esc(p.id)}"><div class="mini g1"></div><div class="t"><b>${esc(p.title)}</b><small>${hm(p.scheduleAt || p.at)} · ${p.facebook ? 'FB + IG' : ''}${p.facebook && p.threads ? ', ' : ''}${p.threads ? 'Threads' : ''}</small></div><span class="badge ${p.posted ? 'ok' : 'warn'}">${p.posted ? (p.scheduleAt && Date.parse(p.scheduleAt) > Date.now() ? 'Đã lên lịch' : 'Đã đăng') : 'Mới điền sẵn'}</span></div>`).join('')
+  box.innerHTML = list.length ? list.map(p => `<div class="ev${p.posted ? '' : ' pending'}" data-post="${esc(p.id)}"><div class="mini cal"><svg class="ic"><use href="#i-cal"/></svg></div><div class="t"><b>${esc(p.title)}</b><small>${hm(p.scheduleAt || p.at)} · ${p.facebook ? 'FB + IG' : ''}${p.facebook && p.threads ? ', ' : ''}${p.threads ? 'Threads' : ''}</small></div><span class="badge ${p.posted ? 'ok' : 'warn'}">${p.posted ? (p.scheduleAt && Date.parse(p.scheduleAt) > Date.now() ? 'Đã lên lịch' : 'Đã đăng') : 'Mới điền sẵn'}</span></div>`).join('')
     : `<div class="empty">Chưa có bài nào ngày ${d.getDate()}/${d.getMonth() + 1}.<br><br><button class="btn sm blue" data-pick="cam"><svg class="ic sm"><use href="#i-cam"/></svg>Chụp ảnh đăng bài</button></div>`;
   [...box.children].forEach((n, i) => n.animate([{ opacity: 0, transform: `translateX(${(dir || 1) * 24}px)` }, { opacity: 1, transform: 'none' }], { duration: 320, delay: i * 50, easing: EASE, fill: 'backwards' }));
 }
