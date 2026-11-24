@@ -1,6 +1,6 @@
 // Service worker: mở app nhanh + xem được dữ liệu lần trước khi mất mạng.
 // Luôn thử mạng trước (để có bản mới ngay), mất mạng mới dùng bản đã lưu.
-const CACHE = 'dangbai-v1';
+const CACHE = 'dangbai-v2';
 const SHELL = ['./', 'index.html', 'app.css', 'app.js', 'e2e.js', 'remote-config.js', 'manifest.webmanifest', 'icon.svg', 'icon-192.png'];
 
 self.addEventListener('install', e => {
