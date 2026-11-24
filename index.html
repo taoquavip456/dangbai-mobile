@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#ECECEF">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -55,13 +55,22 @@
 </section>
 
 <div class="app" id="app">
-  <div class="top">
-    <div><h1 id="title">Đăng bài</h1><small id="sub"></small></div>
+  <div class="top" id="top">
+    <div class="top-t"><span class="top-logo"><svg class="ic sm"><use href="#i-spark"/></svg></span><div><h1 id="title">Đăng bài</h1><small id="sub"></small></div></div>
     <button class="pc off" id="pc"><span class="dot"></span><span id="pc-t">Đang kết nối…</span></button>
   </div>
   <div class="offbar hidden" id="offbar"><svg class="ic sm"><use href="#i-pc"/></svg><span>Máy tính đang tắt hoặc mất mạng. Lệnh bạn gửi được giữ lại, máy bật lên là làm tiếp.</span></div>
 
-  <div class="scroll" id="scroll">
+  <!-- Kéo để làm mới: ngôi sao logo tự vẽ nét -->
+  <div class="ptr" id="ptr"><div class="ptr-badge" id="ptr-badge">
+    <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path id="ptr-big" d="M11 3.5l1.9 5.1 5.1 1.9-5.1 1.9L11 17.5l-1.9-5.1L4 10.5l5.1-1.9z" stroke="#fff" stroke-width="1.6" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/>
+      <g id="ptr-orb"><path id="ptr-small" d="M18.5 15l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z" stroke="#1FA2D6" fill="#1FA2D6" stroke-width="1.2"/></g>
+    </svg>
+  </div></div>
+  <div class="ptr-pill" id="ptr-pill"></div>
+
+  <div class="scroll" id="scroll"><div class="pull-wrap" id="pull-wrap">
     <!-- ===== TỔNG QUAN ===== -->
     <section class="page on" id="p-home">
       <div class="card acc">
@@ -82,7 +91,7 @@
         <div class="row between"><span class="ttl">Sắp đăng</span><button class="btn sm ghost" data-go="lich">Xem lịch <svg class="ic sm"><use href="#i-arrow"/></svg></button></div>
         <div id="h-next"><div class="note">Đang tải…</div></div>
       </div>
-      <div class="pull">Kéo xuống để làm mới</div>
+      <div class="pull hidden" id="pull-hint">Kéo xuống để làm mới</div>
     </section>
 
     <!-- ===== TẠO BÀI ===== -->
@@ -152,7 +161,7 @@
       </div>
       <div class="note" style="text-align:center">Kiểm tra máy và quản lý key chỉ làm trên máy tính.<br><span id="m-ver"></span></div>
     </section>
-  </div>
+  </div></div>
 
   <nav class="tabbar" id="tabbar">
     <span class="tab-ind" id="ind"></span>
